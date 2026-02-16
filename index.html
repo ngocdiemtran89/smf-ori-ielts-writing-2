@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SMF + ORI — IELTS Writing Task 2 Pro</title>
+    <meta name="description" content="Luyện viết IELTS Writing Task 2 Academic với AI chấm bài chuẩn rubric IDP">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <!-- ========== LOGIN SCREEN ========== -->
+    <div class="login-screen" id="loginScreen">
+        <div class="login-card">
+            <div class="login-brand">
+                <span class="login-icon">✍️</span>
+                <h1>SMF + ORI</h1>
+                <p>IELTS Writing Task 2 Pro</p>
+            </div>
+            <div class="login-form">
+                <label for="loginPassword">🔒 Nhập mật khẩu để truy cập</label>
+                <input type="password" id="loginPassword" placeholder="Mật khẩu..."
+                    onkeydown="if(event.key==='Enter')doLogin()">
+                <button class="btn btn-primary btn-login" onclick="doLogin()">🚀 Đăng nhập</button>
+                <p class="login-error" id="loginError"></p>
+            </div>
+            <div class="login-footer">
+                Made by Mrs Kate Trần — SMF English Center — Hotline 0906 303 373
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== APP (hidden until login) ========== -->
+    <div class="app-wrapper" id="appWrapper" style="display:none;">
+
+        <!-- ========== HEADER ========== -->
+        <header class="header">
+            <div class="header-inner">
+                <div class="brand">
+                    <span class="brand-icon">✍️</span>
+                    <div>
+                        <h1>SMF + ORI <span class="brand-highlight">IELTS Writing Task 2 Pro</span></h1>
+                        <p class="brand-sub">AI-Powered Essay Grading — Chuẩn Rubric IDP</p>
+                    </div>
+                </div>
+                <div class="header-actions">
+                    <button class="btn btn-settings" onclick="openSettings()" title="Cài đặt API Key">⚙️</button>
+                </div>
+            </div>
+        </header>
+
+        <!-- ========== NAVIGATION ========== -->
+        <nav class="nav-tabs">
+            <button class="nav-tab active" data-tab="write" onclick="switchTab('write')">📝 Viết bài</button>
+            <button class="nav-tab" data-tab="questions" onclick="switchTab('questions')">📖 Ngân hàng đề</button>
+            <button class="nav-tab" data-tab="types" onclick="switchTab('types')">📚 Dạng bài</button>
+            <button class="nav-tab" data-tab="grammar" onclick="switchTab('grammar')">💡 Grammar</button>
+            <button class="nav-tab" data-tab="samples" onclick="switchTab('samples')">🏆 Mẫu đáp án</button>
+            <button class="nav-tab" data-tab="history" onclick="switchTab('history')">📋 Lịch sử</button>
+        </nav>
+
+        <!-- ========== MAIN CONTENT ========== -->
+        <main class="main-content">
+
+            <!-- TAB 1: WRITE -->
+            <section id="tab-write" class="tab-content active">
+                <div class="write-container">
+                    <!-- Left: Essay Input -->
+                    <div class="write-panel">
+                        <div class="panel-header">
+                            <h2>📝 Viết bài IELTS Task 2</h2>
+                            <div class="timer-display">
+                                <button class="btn btn-sm btn-timer" onclick="toggleTimer()" id="timerBtn">⏱️ Bắt đầu
+                                    40:00</button>
+                                <span id="timerDisplay" class="timer-text"></span>
+                            </div>
+                        </div>
+
+                        <!-- Essay Type Selector -->
+                        <div class="form-group">
+                            <label>Dạng bài</label>
+                            <select id="essayTypeSelect" onchange="updateEssayType()">
+                                <option value="">— Chọn dạng bài —</option>
+                                <option value="opinion">💬 Opinion (Agree/Disagree)</option>
+                                <option value="discussion">⚖️ Discussion (Both Views)</option>
+                                <option value="advantages">📊 Advantages & Disadvantages</option>
+                                <option value="problem">🔧 Problem & Solution</option>
+                                <option value="twopart">❓ Two-Part Question</option>
+                            </select>
+                        </div>
+
+                        <!-- Topic Input -->
+                        <div class="form-group">
+                            <label>Đề bài <button class="btn btn-sm btn-ideas" onclick="generateIdeas()" id="ideasBtn"
+                                    title="AI gợi ý ý tưởng">💡 Gợi ý ý tưởng</button></label>
+                            <textarea id="topicInput" rows="3"
+                                placeholder="Nhập đề bài IELTS Writing Task 2 ở đây..."></textarea>
+                        </div>
+
+                        <!-- Ideas Panel (hidden by default) -->
+                        <div id="ideasPanel" class="ideas-panel hidden">
+                            <div class="ideas-header">
+                                <h3>💡 Gợi ý ý tưởng & Outline</h3>
+                                <button class="btn btn-sm" onclick="closeIdeas()">✕</button>
+                            </div>
+                            <div id="ideasContent" class="ideas-content">
+                                <!-- AI-generated ideas appear here -->
+                            </div>
+                        </div>
+
+                        <!-- Essay Textarea -->
+                        <div class="form-group">
+                            <label>Bài viết <span class="word-count" id="wordCount">0 từ</span></label>
+                            <textarea id="essayInput" rows="18"
+                                placeholder="Viết bài essay ở đây... (tối thiểu 250 từ)"></textarea>
+                        </div>
+
+                        <!-- Actions -->
+                        <div class="write-actions">
+                            <button class="btn btn-primary btn-grade" onclick="gradeEssay()" id="gradeBtn">
+                                🎯 Chấm bài AI
+                            </button>
+                            <button class="btn btn-secondary" onclick="clearEssay()">🗑️ Xóa</button>
+                        </div>
+                    </div>
+
+                    <!-- Right: Results -->
+                    <div class="results-panel" id="resultsPanel">
+                        <div class="results-placeholder">
+                            <div class="placeholder-icon">📊</div>
+                            <h3>Kết quả chấm bài</h3>
+                            <p>Viết bài và nhấn "Chấm bài AI" để nhận kết quả chi tiết theo rubric IELTS IDP.</p>
+                            <div class="rubric-preview">
+                                <div class="rubric-item"><span class="rubric-label">TR</span> Task Response</div>
+                                <div class="rubric-item"><span class="rubric-label">CC</span> Coherence & Cohesion</div>
+                                <div class="rubric-item"><span class="rubric-label">LR</span> Lexical Resource</div>
+                                <div class="rubric-item"><span class="rubric-label">GRA</span> Grammar Range & Accuracy
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 2: QUESTION BANK -->
+            <section id="tab-questions" class="tab-content">
+                <div class="questions-container">
+                    <h2>📖 Ngân hàng đề Cambridge IELTS</h2>
+                    <p class="subtitle">Tổng hợp đề Writing Task 2 từ Cambridge IELTS 11–18. Nhấn "Dùng đề này" để
+                        chuyển sang tab viết bài.</p>
+
+                    <!-- Filter -->
+                    <div class="qbank-filters">
+                        <button class="qbank-filter active" onclick="filterQuestions('all', this)">Tất cả</button>
+                        <button class="qbank-filter" onclick="filterQuestions('opinion', this)">💬 Opinion</button>
+                        <button class="qbank-filter" onclick="filterQuestions('discussion', this)">⚖️
+                            Discussion</button>
+                        <button class="qbank-filter" onclick="filterQuestions('advantages', this)">📊
+                            Adv/Disadv</button>
+                        <button class="qbank-filter" onclick="filterQuestions('problem', this)">🔧 Problem</button>
+                        <button class="qbank-filter" onclick="filterQuestions('twopart', this)">❓ Two-Part</button>
+                    </div>
+
+                    <div id="questionsGrid" class="questions-grid">
+                        <!-- JS renders here -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 3: ESSAY TYPES -->
+            <section id="tab-types" class="tab-content">
+                <div class="types-container">
+                    <h2>📚 5 Dạng bài IELTS Writing Task 2</h2>
+                    <p class="subtitle">Nhấn vào từng dạng để xem chi tiết cấu trúc, mẹo viết và đề mẫu.</p>
+                    <div class="types-grid" id="typesGrid">
+                        <!-- JS renders here -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 4: GRAMMAR -->
+            <section id="tab-grammar" class="tab-content">
+                <div class="grammar-container">
+                    <h2>💡 Cấu trúc Grammar Band Cao</h2>
+                    <p class="subtitle">10 cấu trúc ngữ pháp nâng cao giúp tăng điểm Grammatical Range & Accuracy.</p>
+                    <div class="grammar-grid" id="grammarGrid">
+                        <!-- JS renders here -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 5: SAMPLE ANSWERS -->
+            <section id="tab-samples" class="tab-content">
+                <div class="samples-container">
+                    <h2>🏆 Mẫu Đáp Án 6.5 → 9.0</h2>
+                    <div class="sample-topic-box">
+                        <h3>📋 Đề bài:</h3>
+                        <p id="sampleTopic"></p>
+                    </div>
+                    <div class="band-tabs" id="bandTabs">
+                        <!-- JS renders here -->
+                    </div>
+                    <div id="sampleContent" class="sample-content">
+                        <!-- JS renders here -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 6: HISTORY -->
+            <section id="tab-history" class="tab-content">
+                <div class="history-container">
+                    <h2>📋 Lịch sử bài viết</h2>
+                    <p class="subtitle">Xem lại các bài viết và kết quả chấm trước đó.</p>
+                    <div id="historyList" class="history-list">
+                        <!-- JS renders here -->
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- ========== FOOTER ========== -->
+        <footer class="footer">
+            <div class="footer-brand">SMF + ORI — IELTS Writing Task 2 Pro</div>
+            <div class="footer-credit">Made by Mrs Kate Trần — SMF English Center — Hotline 0906 303 373</div>
+        </footer>
+    </div>
+
+    <!-- ========== SETTINGS MODAL ========== -->
+    <div class="modal-overlay" id="settingsModal">
+        <div class="modal">
+            <h2>⚙️ Cài đặt</h2>
+            <div class="form-group">
+                <label for="groqApiKey">Groq API Key</label>
+                <input type="password" id="groqApiKey" placeholder="gsk_...">
+                <small>Đăng ký miễn phí tại <a href="https://console.groq.com"
+                        target="_blank">console.groq.com</a></small>
+            </div>
+            <div class="form-group">
+                <label for="modelSelect">AI Model</label>
+                <select id="modelSelect">
+                    <option value="llama-3.3-70b-versatile">Llama 3.3 70B (Recommended)</option>
+                    <option value="llama-3.1-8b-instant">Llama 3.1 8B (Faster)</option>
+                    <option value="mixtral-8x7b-32768">Mixtral 8x7B</option>
+                </select>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" onclick="closeSettings()">Hủy</button>
+                <button class="btn btn-primary" onclick="saveSettings()">💾 Lưu</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== LOADING OVERLAY ========== -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-content">
+            <div class="loading-spinner"></div>
+            <h3>🎯 AI đang chấm bài...</h3>
+            <p id="loadingText">Phân tích theo 4 tiêu chí IELTS IDP rubric</p>
+        </div>
+    </div>
+
+    <!-- ========== TOAST ========== -->
+    <div class="toast" id="toast"></div>
+
+    <script src="essay-types.js"></script>
+    <script src="prompts.js"></script>
+    <script src="sample-answers.js"></script>
+    <script src="cambridge-questions.js"></script>
+    <script src="app.js"></script>
+</body>
+
+</html>
