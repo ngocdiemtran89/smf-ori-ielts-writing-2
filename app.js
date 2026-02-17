@@ -422,6 +422,134 @@ async function generateIdeas() {
     }
 }
 
+// ==================== SAMPLE ESSAY GENERATION ====================
+async function generateSampleEssay(topicOverride) {
+    const apiKey = getApiKey();
+    const topic = topicOverride || document.getElementById('topicInput').value.trim();
+    if (!topic) {
+        showToast('⚠️ Nhập đề bài trước khi tạo bài mẫu!');
+        return;
+    }
+
+    // If called from question bank, switch to write tab first
+    if (topicOverride) {
+        switchTab('write');
+        document.getElementById('topicInput').value = topic;
+    }
+
+    const btn = document.getElementById('sampleBtn');
+    btn.disabled = true;
+    btn.innerHTML = '⏳ Đang tạo bài mẫu...';
+
+    const model = localStorage.getItem('smf_groq_model') || 'llama-3.3-70b-versatile';
+    const essayType = document.getElementById('essayTypeSelect').value;
+
+    try {
+        const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${apiKey}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                model: model,
+                messages: [
+                    { role: 'system', content: SAMPLE_ESSAY_PROMPT },
+                    { role: 'user', content: `Topic: ${topic}${essayType ? `\nEssay Type: ${essayType}` : ''}` }
+                ],
+                temperature: 0.7,
+                max_tokens: 3000
+            })
+        });
+
+        if (!response.ok) throw new Error('API Error');
+
+        const data = await response.json();
+        const content = data.choices[0]?.message?.content || '';
+
+        let sampleData;
+        try {
+            const jsonMatch = content.match(/\{[\s\S]*\}/);
+            sampleData = JSON.parse(jsonMatch[0]);
+        } catch (e) {
+            throw new Error('Parse error');
+        }
+
+        renderSampleEssayResult(sampleData);
+        showToast('✅ Đã tạo bài mẫu Band 8.0+ thành công!');
+
+    } catch (error) {
+        showToast('❌ Không thể tạo bài mẫu. Thử lại!');
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = '✍️ Tạo bài mẫu AI';
+    }
+}
+
+function renderSampleEssayResult(data) {
+    const panel = document.getElementById('resultsPanel');
+    panel.innerHTML = `
+        <div class="result-section">
+            <div class="result-header">
+                <h2>✍️ Bài mẫu Band 8.0+</h2>
+                <div class="result-band" style="background: linear-gradient(135deg, #10b981, #059669);">8.0+</div>
+            </div>
+        </div>
+
+        <div class="result-section">
+            <h3>📄 Bài viết mẫu (${data.wordCount || '~300'} từ)</h3>
+            <div class="upgraded-essay">${(data.essay || '').replace(/\n/g, '<br>')}</div>
+            <button class="btn btn-sm" style="margin-top:10px" onclick="navigator.clipboard.writeText(document.querySelector('.upgraded-essay')?.innerText || ''); showToast('📋 Đã copy bài mẫu!')">📋 Copy bài mẫu</button>
+        </div>
+
+        ${data.structure ? `
+        <div class="result-section">
+            <h3>🏗️ Phân tích cấu trúc</h3>
+            <div class="structure-breakdown">
+                <div class="structure-item">
+                    <span class="structure-label">📌 Introduction:</span>
+                    <span>${data.structure.introduction}</span>
+                </div>
+                <div class="structure-item">
+                    <span class="structure-label">📌 Body 1:</span>
+                    <span>${data.structure.body1}</span>
+                </div>
+                <div class="structure-item">
+                    <span class="structure-label">📌 Body 2:</span>
+                    <span>${data.structure.body2}</span>
+                </div>
+                <div class="structure-item">
+                    <span class="structure-label">📌 Conclusion:</span>
+                    <span>${data.structure.conclusion}</span>
+                </div>
+            </div>
+        </div>` : ''}
+
+        ${data.keyVocabulary ? `
+        <div class="result-section">
+            <h3>📚 Từ vựng nổi bật</h3>
+            <div class="vocab-grid-result">
+                ${data.keyVocabulary.map(v => `
+                    <div class="vocab-chip">
+                        <strong>${v.word}</strong> — ${v.meaning}
+                    </div>
+                `).join('')}
+            </div>
+        </div>` : ''}
+
+        ${data.grammarHighlights ? `
+        <div class="result-section">
+            <h3>🔤 Cấu trúc ngữ pháp nâng cao</h3>
+            ${data.grammarHighlights.map(g => `
+                <div class="grammar-highlight">
+                    <span class="grammar-name">${g.structure}:</span>
+                    <span class="grammar-ex">"${g.example}"</span>
+                </div>
+            `).join('')}
+        </div>` : ''}
+    `;
+}
+
 function renderIdeas(ideas) {
     const el = document.getElementById('ideasContent');
     el.innerHTML = `
@@ -595,8 +723,8 @@ function saveToHistory(topic, essay, essayType, result) {
         essayType,
         result
     });
-    // Keep max 20 entries
-    if (history.length > 20) history.pop();
+    // Keep max 10 entries to save storage
+    while (history.length > 10) history.pop();
     localStorage.setItem('smf_ielts_history', JSON.stringify(history));
     renderHistory();
 }
@@ -764,6 +892,7 @@ function renderQuestionBank() {
                     <div class="qbank-topic">${q.topic}</div>
                     <div class="qbank-actions">
                         <button class="btn-use-topic" onclick="useTopic('${escapeAttr(q.topic)}', '${q.type}')">📝 Dùng đề này</button>
+                        <button class="btn-sample-qbank" onclick="generateSampleEssay('${escapeAttr(q.topic)}')">✍️ Tạo bài mẫu</button>
                         <button class="btn-show-vocab" onclick="toggleVocab('${id}', this)">📚 Từ vựng gợi ý</button>
                     </div>
                     ${q.vocabulary ? `

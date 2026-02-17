@@ -100,76 +100,113 @@ Respond in Vietnamese. Format as JSON:
 
 Respond with ONLY valid JSON, no markdown.`;
 
+const SAMPLE_ESSAY_PROMPT = `You are an expert IELTS Writing Task 2 teacher. Generate a BAND 8.0+ model essay for the given topic.
+
+The essay MUST:
+1. Be 280-320 words
+2. Follow proper IELTS Task 2 structure (Introduction → Body 1 → Body 2 → Conclusion)
+3. Use advanced vocabulary and complex grammar structures
+4. Have clear topic sentences and supporting examples
+5. Match the essay type (opinion/discussion/advantages/problem/twopart)
+
+Respond in VALID JSON only:
+{
+  "title": "Band 8.0+ Model Essay",
+  "essayType": "opinion|discussion|advantages|problem|twopart",
+  "essay": "The full model essay text here, with proper paragraph breaks using \\n\\n",
+  "wordCount": 290,
+  "structure": {
+    "introduction": "Brief Vietnamese explanation of what the intro does",
+    "body1": "Brief Vietnamese explanation of Body 1's argument",
+    "body2": "Brief Vietnamese explanation of Body 2's argument",
+    "conclusion": "Brief Vietnamese explanation of conclusion"
+  },
+  "keyVocabulary": [
+    {"word": "advanced word", "meaning": "nghĩa tiếng Việt"},
+    {"word": "advanced word 2", "meaning": "nghĩa tiếng Việt"}
+  ],
+  "grammarHighlights": [
+    {"structure": "Grammar structure name", "example": "Example from the essay"}
+  ]
+}
+
+RULES:
+1. Essay must be in ENGLISH
+2. Structure explanations and vocabulary meanings must be in VIETNAMESE
+3. Use sophisticated but natural language
+4. Include at least 3 complex grammar structures (inversion, cleft sentences, participle clauses, etc.)
+5. Respond with ONLY the JSON object, no markdown`;
+
 // High-band grammar structures
 const GRAMMAR_STRUCTURES = [
-    {
-        name: 'Cleft Sentences',
-        band: '7.0+',
-        formula: 'It is/was + [focus] + that/who + [rest of sentence]',
-        example: 'It is the government that should take responsibility for reducing pollution.',
-        usage: 'Nhấn mạnh một yếu tố trong câu'
-    },
-    {
-        name: 'Inversion',
-        band: '7.5+',
-        formula: 'Not only + auxiliary + S + V, but S + also + V',
-        example: 'Not only does education improve job prospects, but it also broadens perspectives.',
-        usage: 'Nhấn mạnh, tạo hiệu ứng văn phong formal'
-    },
-    {
-        name: 'Conditional Type 2 (Hypothetical)',
-        band: '6.5+',
-        formula: 'If + S + V(past), S + would/could + V',
-        example: 'If governments invested more in public transport, pollution levels would decrease significantly.',
-        usage: 'Đưa ra giả thuyết không thực tế ở hiện tại'
-    },
-    {
-        name: 'Passive Voice (Formal)',
-        band: '6.5+',
-        formula: 'It + is/has been + V(past participle) + that...',
-        example: 'It has been argued that technology has more benefits than drawbacks.',
-        usage: 'Văn phong academic, khách quan'
-    },
-    {
-        name: 'Relative Clauses',
-        band: '6.5+',
-        formula: 'Noun + who/which/that + V...',
-        example: 'Students who are exposed to diverse cultures tend to be more open-minded.',
-        usage: 'Bổ sung thông tin, tạo câu phức'
-    },
-    {
-        name: 'Participle Clauses',
-        band: '7.5+',
-        formula: 'V-ing / V-ed, S + V...',
-        example: 'Having considered both sides of the argument, I firmly believe that education is the key.',
-        usage: 'Rút gọn mệnh đề, tạo câu phức nâng cao'
-    },
-    {
-        name: 'Concession (Although/Despite)',
-        band: '6.5+',
-        formula: 'Although + clause / Despite + noun/V-ing, S + V...',
-        example: 'Although technology offers numerous advantages, it can also lead to social isolation.',
-        usage: 'Nhượng bộ, thể hiện suy nghĩ nhiều chiều'
-    },
-    {
-        name: 'Noun Clauses',
-        band: '7.0+',
-        formula: 'What/How/Whether + S + V + is/remains + adjective/noun',
-        example: 'What remains controversial is whether standardized testing truly measures intelligence.',
-        usage: 'Tạo subject phức tạp, ấn tượng'
-    },
-    {
-        name: 'Subjunctive (Formal Suggestion)',
-        band: '8.0+',
-        formula: 'It is essential/vital/imperative + that + S + V(base form)',
-        example: 'It is imperative that governments allocate more funding to renewable energy.',
-        usage: 'Đề xuất formal, academic tone'
-    },
-    {
-        name: 'Correlative Conjunctions',
-        band: '7.0+',
-        formula: 'Both...and / Neither...nor / Not only...but also',
-        example: 'Both individuals and governments should take responsibility for environmental protection.',
-        usage: 'Liên kết 2 ý song song, tạo balance'
-    }
+  {
+    name: 'Cleft Sentences',
+    band: '7.0+',
+    formula: 'It is/was + [focus] + that/who + [rest of sentence]',
+    example: 'It is the government that should take responsibility for reducing pollution.',
+    usage: 'Nhấn mạnh một yếu tố trong câu'
+  },
+  {
+    name: 'Inversion',
+    band: '7.5+',
+    formula: 'Not only + auxiliary + S + V, but S + also + V',
+    example: 'Not only does education improve job prospects, but it also broadens perspectives.',
+    usage: 'Nhấn mạnh, tạo hiệu ứng văn phong formal'
+  },
+  {
+    name: 'Conditional Type 2 (Hypothetical)',
+    band: '6.5+',
+    formula: 'If + S + V(past), S + would/could + V',
+    example: 'If governments invested more in public transport, pollution levels would decrease significantly.',
+    usage: 'Đưa ra giả thuyết không thực tế ở hiện tại'
+  },
+  {
+    name: 'Passive Voice (Formal)',
+    band: '6.5+',
+    formula: 'It + is/has been + V(past participle) + that...',
+    example: 'It has been argued that technology has more benefits than drawbacks.',
+    usage: 'Văn phong academic, khách quan'
+  },
+  {
+    name: 'Relative Clauses',
+    band: '6.5+',
+    formula: 'Noun + who/which/that + V...',
+    example: 'Students who are exposed to diverse cultures tend to be more open-minded.',
+    usage: 'Bổ sung thông tin, tạo câu phức'
+  },
+  {
+    name: 'Participle Clauses',
+    band: '7.5+',
+    formula: 'V-ing / V-ed, S + V...',
+    example: 'Having considered both sides of the argument, I firmly believe that education is the key.',
+    usage: 'Rút gọn mệnh đề, tạo câu phức nâng cao'
+  },
+  {
+    name: 'Concession (Although/Despite)',
+    band: '6.5+',
+    formula: 'Although + clause / Despite + noun/V-ing, S + V...',
+    example: 'Although technology offers numerous advantages, it can also lead to social isolation.',
+    usage: 'Nhượng bộ, thể hiện suy nghĩ nhiều chiều'
+  },
+  {
+    name: 'Noun Clauses',
+    band: '7.0+',
+    formula: 'What/How/Whether + S + V + is/remains + adjective/noun',
+    example: 'What remains controversial is whether standardized testing truly measures intelligence.',
+    usage: 'Tạo subject phức tạp, ấn tượng'
+  },
+  {
+    name: 'Subjunctive (Formal Suggestion)',
+    band: '8.0+',
+    formula: 'It is essential/vital/imperative + that + S + V(base form)',
+    example: 'It is imperative that governments allocate more funding to renewable energy.',
+    usage: 'Đề xuất formal, academic tone'
+  },
+  {
+    name: 'Correlative Conjunctions',
+    band: '7.0+',
+    formula: 'Both...and / Neither...nor / Not only...but also',
+    example: 'Both individuals and governments should take responsibility for environmental protection.',
+    usage: 'Liên kết 2 ý song song, tạo balance'
+  }
 ];

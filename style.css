@@ -506,6 +506,99 @@ textarea {
     flex: 1;
 }
 
+.btn-sample {
+    padding: 14px 20px;
+    font-size: 14px;
+    background: linear-gradient(135deg, #10b981, #059669) !important;
+    color: white !important;
+    border: none;
+    border-radius: var(--radius);
+    font-family: var(--font);
+    font-weight: 700;
+    cursor: pointer;
+    transition: var(--transition);
+    flex-shrink: 0;
+}
+
+.btn-sample:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 3px 10px rgba(16, 185, 129, 0.3);
+}
+
+.btn-sample-qbank {
+    align-self: flex-start;
+    padding: 7px 16px;
+    font-size: 12px;
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-family: var(--font);
+    font-weight: 700;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.btn-sample-qbank:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 3px 10px rgba(245, 158, 11, 0.3);
+}
+
+.structure-breakdown {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.structure-item {
+    padding: 10px 14px;
+    background: var(--gray-50);
+    border-radius: 8px;
+    border-left: 3px solid var(--primary);
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.structure-label {
+    font-weight: 700;
+    color: var(--primary-dark);
+    margin-right: 6px;
+}
+
+.vocab-grid-result {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.vocab-chip {
+    background: linear-gradient(135deg, #f0f5ff, #eef2ff);
+    padding: 8px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    border: 1px solid rgba(26, 86, 219, 0.15);
+}
+
+.grammar-highlight {
+    padding: 8px 12px;
+    margin-bottom: 6px;
+    background: #fffbeb;
+    border-radius: 8px;
+    border-left: 3px solid #f59e0b;
+    font-size: 13px;
+}
+
+.grammar-name {
+    font-weight: 700;
+    color: #d97706;
+    margin-right: 6px;
+}
+
+.grammar-ex {
+    font-style: italic;
+    color: var(--gray-600);
+}
+
 /* Ideas Panel */
 .ideas-panel {
     background: linear-gradient(135deg, #fffbeb, #fef3c7);
