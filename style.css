@@ -512,12 +512,31 @@ textarea {
     background: linear-gradient(135deg, #10b981, #059669) !important;
     color: white !important;
     border: none;
-    border-radius: var(--radius);
+    border-radius: 0 var(--radius) var(--radius) 0;
     font-family: var(--font);
     font-weight: 700;
     cursor: pointer;
     transition: var(--transition);
     flex-shrink: 0;
+}
+
+.sample-group {
+    display: flex;
+    align-items: stretch;
+}
+
+.band-select {
+    padding: 8px 12px;
+    font-size: 13px;
+    font-weight: 700;
+    font-family: var(--font);
+    border: 2px solid #10b981;
+    border-right: none;
+    border-radius: var(--radius) 0 0 var(--radius);
+    background: #ecfdf5;
+    color: #059669;
+    cursor: pointer;
+    appearance: auto;
 }
 
 .btn-sample:hover {

@@ -100,18 +100,26 @@ Respond in Vietnamese. Format as JSON:
 
 Respond with ONLY valid JSON, no markdown.`;
 
-const SAMPLE_ESSAY_PROMPT = `You are an expert IELTS Writing Task 2 teacher. Generate a BAND 8.0+ model essay for the given topic.
+const SAMPLE_ESSAY_PROMPT = `You are an expert IELTS Writing Task 2 teacher. Generate a model essay at a SPECIFIC band score level as requested by the user.
+
+The user will specify a "Target Band Score" (6.5, 7.0, 7.5, 8.0, or 9.0). You MUST write the essay at EXACTLY that band level:
+
+- Band 6.5: Use mostly simple vocabulary with some attempts at less common words. Mix of simple and complex sentences with some errors. Ideas are relevant but not fully developed. Adequate paragraphing.
+- Band 7.0: Good range of vocabulary with some less common items. Variety of complex structures with good control. Clear position throughout. Logical paragraphing with clear central topic.  
+- Band 7.5: Wide vocabulary range with awareness of style. Frequent error-free complex sentences. Well-developed ideas with clear progression. Skillful use of cohesive devices.
+- Band 8.0: Sophisticated vocabulary used naturally. Wide range of structures, majority error-free. Fully developed position with relevant extended ideas. Seamless cohesion.
+- Band 9.0: Expert-level vocabulary with full flexibility. Full range of structures with rare minor errors only. Fully addresses all parts with fully extended, well-supported ideas. Skilful paragraphing throughout.
 
 The essay MUST:
-1. Be 280-320 words
+1. Be 250-320 words
 2. Follow proper IELTS Task 2 structure (Introduction → Body 1 → Body 2 → Conclusion)
-3. Use advanced vocabulary and complex grammar structures
+3. Match the requested band level in vocabulary, grammar, and argument quality
 4. Have clear topic sentences and supporting examples
-5. Match the essay type (opinion/discussion/advantages/problem/twopart)
 
 Respond in VALID JSON only:
 {
-  "title": "Band 8.0+ Model Essay",
+  "title": "Band X.X Model Essay",
+  "bandScore": 8.0,
   "essayType": "opinion|discussion|advantages|problem|twopart",
   "essay": "The full model essay text here, with proper paragraph breaks using \\n\\n",
   "wordCount": 290,
@@ -133,8 +141,8 @@ Respond in VALID JSON only:
 RULES:
 1. Essay must be in ENGLISH
 2. Structure explanations and vocabulary meanings must be in VIETNAMESE
-3. Use sophisticated but natural language
-4. Include at least 3 complex grammar structures (inversion, cleft sentences, participle clauses, etc.)
+3. Match the target band level precisely — do NOT write above or below
+4. Include grammar structures appropriate for the target band level
 5. Respond with ONLY the JSON object, no markdown`;
 
 // High-band grammar structures

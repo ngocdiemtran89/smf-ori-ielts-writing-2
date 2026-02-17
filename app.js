@@ -443,6 +443,7 @@ async function generateSampleEssay(topicOverride) {
 
     const model = localStorage.getItem('smf_groq_model') || 'llama-3.3-70b-versatile';
     const essayType = document.getElementById('essayTypeSelect').value;
+    const targetBand = document.getElementById('targetBandSelect').value || '8.0';
 
     try {
         const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
@@ -455,7 +456,7 @@ async function generateSampleEssay(topicOverride) {
                 model: model,
                 messages: [
                     { role: 'system', content: SAMPLE_ESSAY_PROMPT },
-                    { role: 'user', content: `Topic: ${topic}${essayType ? `\nEssay Type: ${essayType}` : ''}` }
+                    { role: 'user', content: `Topic: ${topic}${essayType ? `\nEssay Type: ${essayType}` : ''}\nTarget Band Score: ${targetBand}` }
                 ],
                 temperature: 0.7,
                 max_tokens: 3000
@@ -487,17 +488,18 @@ async function generateSampleEssay(topicOverride) {
 }
 
 function renderSampleEssayResult(data) {
+    const band = data.bandScore || '8.0';
     const panel = document.getElementById('resultsPanel');
     panel.innerHTML = `
         <div class="result-section">
             <div class="result-header">
-                <h2>✍️ Bài mẫu Band 8.0+</h2>
-                <div class="result-band" style="background: linear-gradient(135deg, #10b981, #059669);">8.0+</div>
+                <h2>✍️ Bài mẫu Band ${band}</h2>
+                <div class="result-band" style="background: linear-gradient(135deg, #10b981, #059669);">${band}</div>
             </div>
         </div>
 
         <div class="result-section">
-            <h3>📄 Bài viết mẫu (${data.wordCount || '~300'} từ)</h3>
+            <h3>📄 Bài viết mẫu Band ${band} (${data.wordCount || '~300'} từ)</h3>
             <div class="upgraded-essay">${(data.essay || '').replace(/\n/g, '<br>')}</div>
             <button class="btn btn-sm" style="margin-top:10px" onclick="navigator.clipboard.writeText(document.querySelector('.upgraded-essay')?.innerText || ''); showToast('📋 Đã copy bài mẫu!')">📋 Copy bài mẫu</button>
         </div>

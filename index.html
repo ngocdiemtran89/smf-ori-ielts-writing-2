@@ -123,9 +123,18 @@
                             <button class="btn btn-primary btn-grade" onclick="gradeEssay()" id="gradeBtn">
                                 🎯 Chấm bài AI
                             </button>
-                            <button class="btn btn-sample" onclick="generateSampleEssay()" id="sampleBtn">
-                                ✍️ Tạo bài mẫu AI
-                            </button>
+                            <div class="sample-group">
+                                <select id="targetBandSelect" class="band-select">
+                                    <option value="8.0">Band 8.0</option>
+                                    <option value="9.0">Band 9.0</option>
+                                    <option value="7.5">Band 7.5</option>
+                                    <option value="7.0">Band 7.0</option>
+                                    <option value="6.5">Band 6.5</option>
+                                </select>
+                                <button class="btn btn-sample" onclick="generateSampleEssay()" id="sampleBtn">
+                                    ✍️ Tạo bài mẫu AI
+                                </button>
+                            </div>
                             <button class="btn btn-secondary" onclick="clearEssay()">🗑️ Xóa</button>
                         </div>
                     </div>
